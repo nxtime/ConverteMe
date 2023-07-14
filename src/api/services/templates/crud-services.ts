@@ -1,5 +1,6 @@
-import { DeepPartial, DeleteResult } from "typeorm";
+import { DeepPartial, DeleteResult, UpdateResult } from "typeorm";
 import models, { TModelTypes, TModels, modelsRelations } from "../../../database/entities";
+import logger from "../../../utils/logger";
 import repositories from "../../../database/repositories";
 
 class CrudServices {
@@ -30,28 +31,39 @@ class CrudServices {
     return createdItems;
   }
 
-  async update(id: number, data: DeepPartial<typeof models[TModels]>): Promise<TModelTypes> {
-    const updatedItem = await this.repository.manager.update(
-      models[this.model],
-      {
-        where: {
-          id
-        }
-      },
-      data
-    ) as unknown as InstanceType<typeof models[TModels]>;
+  async update(id: number, data: DeepPartial<typeof models[TModels]>): Promise<UpdateResult> {
+    try {
 
-    return await updatedItem.save();
+      const updatedItem = await this.repository.update(
+        {
+          id
+        },
+        data
+      );
+
+      console.log(data, updatedItem);
+
+      return updatedItem;
+    } catch (err) {
+      logger.error(err);
+      throw new Error(`Error updating ${this.model} of id ${id}`);
+    }
   }
 
   async updateMany(ids: number[], data: DeepPartial<typeof models[TModels]>[]): Promise<string> {
-    const response: TModelTypes[] = [];
+    try {
 
-    await Promise.all(ids.map(async (id, index) => {
-      response.push(await this.update(id, data[index]));
-    }));
+      const response: UpdateResult[] = [];
 
-    return response.join(", ");
+      await Promise.all(ids.map(async (id, index) => {
+        response.push(await this.update(id, data[index]));
+      }));
+
+      return response.join(", ");
+    } catch (err) {
+      logger.error(err);
+      throw new Error(`Error updating ${this.model} of ids ${ids.join(", ")}`);
+    }
   }
 
   async delete(id: number): Promise<DeleteResult> {

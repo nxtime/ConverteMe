@@ -14,7 +14,7 @@ export const modelsRelations: { [Key in TModels]: string[] } = {
   comment: ["user"],
   follower: ["user"],
   post: ["user", "comments"],
-  user: ["posts", "followers", "following", "comments"]
+  user: ["posts", "followers.follower", "following.following", "comments"]
 };
 
 export type TModels = keyof typeof models;

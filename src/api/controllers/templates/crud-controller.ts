@@ -42,11 +42,12 @@ class CrudController {
   update = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
+      console.log("Body: ", req.body);
       const updatedItem = this.service.update(Number(id), req.body);
 
       if (updatedItem instanceof Error) throw updatedItem;
 
-      res.status(200).send(`Updated ${this.model} of id: ${id} successfully`);
+      res.status(200).send(`Updated ${this.model} of id ${id} successfully`);
 
     } catch (err: any) {
       logger.error(err.message);
@@ -61,7 +62,7 @@ class CrudController {
 
       if (!updatedItems) throw updatedItems;
 
-      res.status(200).send(`Updated ${this.model}s of ids: ${ids.join(", ")} successfully`);
+      res.status(200).send(`Updated ${this.model}s of ids ${ids.join(", ")} successfully`);
     } catch (err: any) {
       logger.error(err.message);
       res.status(err.statusCode || 500).json({ message: err.message });
@@ -76,7 +77,7 @@ class CrudController {
 
       if (deletedItem instanceof Error) throw deletedItem;
 
-      res.status(200).send(`Removed ${this.model} of id: ${id} successfully`);
+      res.status(200).send(`Removed ${this.model} of id ${id} successfully`);
     } catch (err: any) {
       logger.error(err.message);
       res.status(err.statusCode || 500).json({ message: err.message });
@@ -91,7 +92,7 @@ class CrudController {
 
       if (deletedItems instanceof Error) throw deletedItems;
 
-      res.status(200).send(`Removed ${this.model}s of ids: ${ids.join(", ")} successfully`);
+      res.status(200).send(`Removed ${this.model}s of ids ${ids.join(", ")} successfully`);
     } catch (err: any) {
       logger.error(err.message);
       res.status(err.statusCode || 500);

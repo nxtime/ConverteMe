@@ -8,6 +8,9 @@ export class Post extends BaseEntity {
   id!: number;
 
   @Column({ nullable: false })
+  title!: string;
+
+  @Column({ nullable: false })
   content!: string;
 
   @ManyToOne(() => User, user => user.posts, { cascade: true, onDelete: "CASCADE" })
